@@ -20,10 +20,21 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 
+api = Api(app)
 
 @app.route('/')
 def home():
     return ''
+
+class Campers(Resource):
+    def get(self):
+        camper_list = []
+        for camper in Camper.query.all():
+            camper.serialize_rules=('-signups',)
+            camper_list.append(camper.to_dict())
+        return make_response(camper_list, 200)
+    
+api.add_resource(Campers, '/campers')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

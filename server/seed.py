@@ -25,7 +25,7 @@ def create_campers():
     for _ in range(5):
         c = Camper(
             name=fake.name(),
-            age=rc(range(8, 19))
+            age=rc(range(8, 18))
         )
         campers.append(c)
 
