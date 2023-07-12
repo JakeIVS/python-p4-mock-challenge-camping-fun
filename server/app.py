@@ -33,6 +33,15 @@ class Campers(Resource):
             camper.serialize_rules=('-signups',)
             camper_list.append(camper.to_dict())
         return make_response(camper_list, 200)
+    def post(self):
+        try:
+            data = request.get_json()
+            new_camper = Camper(name=data['name'], age=data['age'])
+            db.session.add(new_camper)
+            db.session.commit()
+            return make_response(new_camper.to_dict(), 201)
+        except:
+            return make_response({'errors':['validation errors']}, 400)
 
 class Camper_id(Resource):
     def get(self, id):
@@ -52,13 +61,30 @@ class Camper_id(Resource):
                 db.session.commit()
                 return make_response(camper.to_dict(), 202)
             except:
-                return make_response({'error':['validation errors']})
+                return make_response({'error':['validation errors']}, 400)
         else: #camper does not exist
-            return make_response({'error':'Camper not found'})
+            return make_response({'error':'Camper not found'}, 400)
 
-        
+class Activities(Resource):
+    def get(self):
+        activities = [activity.to_dict() for activity in Activity.query.all()]
+        return make_response(activities, 200)
+
+class Activity_id(Resource):
+    def delete(self,id):
+        activity = Activity.query.filter(Activity.id == id).first()
+        if activity:
+            db.session.delete(activity)
+            db.session.commit()
+            return make_response({}, 204)
+        else:
+            return make_response({'error':'Activity not found'}, 404)
+
 api.add_resource(Campers, '/campers')
 api.add_resource(Camper_id, '/campers/<int:id>')
+api.add_resource(Activities, '/activities')
+api.add_resource(Activity_id, '/activities/<int:id>')
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
