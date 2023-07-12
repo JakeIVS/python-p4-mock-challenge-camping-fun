@@ -49,7 +49,7 @@ class Camper_id(Resource):
         if camper:
             return make_response(camper.to_dict(), 200)
         else:
-            return make_response({'error':'Camper not found'}, 400)
+            return make_response({'error':'Camper not found'}, 404)
     def patch(self,id):
         camper = Camper.query.filter(Camper.id == id).first()
         if camper:
@@ -63,7 +63,7 @@ class Camper_id(Resource):
             except:
                 return make_response({'error':['validation errors']}, 400)
         else: #camper does not exist
-            return make_response({'error':'Camper not found'}, 400)
+            return make_response({'error':'Camper not found'}, 404)
 
 class Activities(Resource):
     def get(self):
