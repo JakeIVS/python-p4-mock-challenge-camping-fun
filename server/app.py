@@ -33,8 +33,32 @@ class Campers(Resource):
             camper.serialize_rules=('-signups',)
             camper_list.append(camper.to_dict())
         return make_response(camper_list, 200)
-    
+
+class Camper_id(Resource):
+    def get(self, id):
+        camper = Camper.query.filter(Camper.id == id).first()
+        if camper:
+            return make_response(camper.to_dict(), 200)
+        else:
+            return make_response({'error':'Camper not found'}, 400)
+    def patch(self,id):
+        camper = Camper.query.filter(Camper.id == id).first()
+        if camper:
+            try:
+                data = request.get_json()
+                for attr in data:
+                    setattr(camper, attr, data[attr])
+                db.session.add(camper)
+                db.session.commit()
+                return make_response(camper.to_dict(), 202)
+            except:
+                return make_response({'error':['validation errors']})
+        else: #camper does not exist
+            return make_response({'error':'Camper not found'})
+
+        
 api.add_resource(Campers, '/campers')
+api.add_resource(Camper_id, '/campers/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
