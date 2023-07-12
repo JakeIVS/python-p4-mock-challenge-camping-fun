@@ -80,11 +80,26 @@ class Activity_id(Resource):
         else:
             return make_response({'error':'Activity not found'}, 404)
 
+class Signups(Resource):
+    def post(self):
+        try:
+            data = request.get_json()
+            new_signup = Signup(
+                camper_id = data['camper_id'], 
+                activity_id = data['activity_id'],
+                time = data['time']
+                )
+            db.session.add(new_signup)
+            db.session.commit()
+            return make_response(new_signup.to_dict(), 202)
+        except:
+            return make_response({'errors':['validation errors']}, 402)
+
 api.add_resource(Campers, '/campers')
 api.add_resource(Camper_id, '/campers/<int:id>')
 api.add_resource(Activities, '/activities')
 api.add_resource(Activity_id, '/activities/<int:id>')
-
+api.add_resource(Signups, '/signups')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
